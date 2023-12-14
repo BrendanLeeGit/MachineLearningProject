@@ -74,10 +74,11 @@ def linear_reg_linear():
     xPlot = np.arange(min(x), max(x), 0.1)
     yPlot = theta[0] + theta[1] * xPlot
 
-    plt.plot(xPlot, yPlot, 'g-')
+    plt.plot(xPlot, yPlot, 'g-', label="Linear Regression (Linear Fit)")
     plt.xlabel("Hours")
     plt.ylabel("Stock Price (USD)")
     plt.title("Linear Regression - Linear Fit to Predict the Stock Data")
+    plt.legend()
     plt.show()
 
 
@@ -98,10 +99,11 @@ def linear_reg_quadratic():
     xPlot = np.arange(min(x), max(x), 0.1)
     yPlot = theta[0] + theta[1] * xPlot + theta[2] * xPlot ** 2
 
-    plt.plot(xPlot, yPlot, 'r-')
+    plt.plot(xPlot, yPlot, 'r-', label="Linear Regression (Quadratic Fit)")
     plt.xlabel("Hours")
     plt.ylabel("Stock Price (USD)")
     plt.title("Linear Regression - Quadratic Fit to Predict the Stock Data")
+    plt.legend()
     plt.show()
 
 
@@ -119,10 +121,58 @@ def lowess():
     print("Shape of X (LOWESS):", np.shape(X))
     theta = inv(np.transpose(X) @ X) @ np.transpose(X) @ y
     yp = theta[0] + theta[1] * x
-    plt.plot(x, yp, 'g') # Comment out this line if we don't need Linear Regression
+    plt.plot(x, yp, 'g', label="Linear Regression (Linear Fit)") # Comment out this line if we don't need Linear Regression
 
-    # Query Point - 1
-    xt1 = 0.25*m # Change xt1; 25% of the number of training examples
+    # Note: Query points are out of order (check the ranges)
+
+    ########## Query Point - 1 ##########
+    x_Range1, yp_1, xt1, yt1, yt1_lowess = query_point(m, x, y, X, theta, 0.125, 0.475, 0.25)
+
+    plt.plot(x_Range1, yp_1, 'r', label="LOWESS")
+    plt.plot(xt1, yt1, 'm*', label="yt1 (Linear Regression)")
+    plt.plot(xt1, yt1_lowess, 'k*', label="yt1 (LOWESS)")
+
+    ########## Query Point - 2 ##########
+    x_Range2, yp_2, xt2, yt2, yt2_lowess = query_point(m, x, y, X, theta, 0.375, 0.725, 0.5)
+
+    plt.plot(x_Range2, yp_2, 'r')
+    plt.plot(xt2, yt2, 'm*')
+    plt.plot(xt2, yt2_lowess, 'k*')
+
+    ########## Query Point - 3 ##########
+    x_Range3, yp_3, xt3, yt3, yt3_lowess = query_point(m, x, y, X, theta, 0.625, 0.875, 0.75)
+
+    plt.plot(x_Range3, yp_3, 'r')
+    plt.plot(xt3, yt3, 'm*')
+    plt.plot(xt3, yt3_lowess, 'k*')
+
+    ########## Query Point - 4 ##########
+    x_Range4, yp_4, xt4, yt4, yt4_lowess = query_point(m, x, y, X, theta, 0.875, 1, 1)
+
+    plt.plot(x_Range4, yp_4, 'r')
+    plt.plot(xt4, yt4, 'm*')
+    plt.plot(xt4, yt4_lowess, 'k*')
+
+    ########## Query Point - 5 ##########
+    x_Range5, yp_5, xt5, yt5, yt5_lowess = query_point(m, x, y, X, theta, 0, 0.125, 0)
+
+    plt.plot(x_Range5, yp_5, 'r')
+    plt.plot(xt5, yt5, 'm*')
+    plt.plot(xt5, yt5_lowess, 'k*')
+
+    plt.xlabel("Hours")
+    plt.ylabel("Stock Price (USD)")
+    plt.title("LOWESS to Predict the Stock Data")
+    plt.legend()
+    plt.show()
+
+# Queries a point for LOWESS
+"""
+Takes m for the number of training examples, x and y for the training sets, X for the design matrix, theta,
+2 range multiplier values for x_Range, and the percentage of the number of training examples you want to use
+"""
+def query_point(m, x, y, X, theta, range_m1, range_m2, percentTrainEx):
+    xt1 = percentTrainEx*m # % of the number of training examples
 
     # Assigning weights to training examples
     T = 0.05*m # Bandwidth parameter; 0.05 * the number of training examples
@@ -130,66 +180,16 @@ def lowess():
     W = np.diag(w)
 
     theta_1 = inv(np.transpose(X) @ W @ X) @ np.transpose(X) @ W @ y
-    x_Range1 = np.arange(m*0.125, m*0.475, 0.01) # Change the range
+    x_Range1 = np.arange(m*range_m1, m*range_m2, 0.01) # Change the range
     yp_1 = theta_1[0] + theta_1[1] * x_Range1
-    plt.plot(x_Range1, yp_1, 'r')
 
-    # Prediction with Linear Regression (LR); Comment out the two lines below if we don't need Linear Regression
+    # Used for prediction with Linear Regression (LR)
     yt1 = theta[0] + theta[1] * xt1
-    plt.plot(xt1, yt1, 'm*')
 
-    # Prediction with LOWESS
+    # Used for prediction with LOWESS
     yt1_lowess = theta_1[0] + theta_1[1] * xt1
-    plt.plot(xt1, yt1_lowess, 'k*')
 
-    ###########################################
-    # Query Point - 2
-    xt2 = 0.75*m # Change xt2; 75% of the number of training examples
-
-    # Assigning weights to training examples
-    T = 0.05*m  # Bandwidth parameter
-    w = np.exp(-(x - xt2) ** 2 / (2 * T ** 2))
-    W = np.diag(w)
-
-    theta_2 = inv(np.transpose(X) @ W @ X) @ np.transpose(X) @ W @ y
-    x_Range2 = np.arange(m*0.625, m*0.875, 0.01)
-    yp_2 = theta_2[0] + theta_2[1] * x_Range2
-    plt.plot(x_Range2, yp_2, 'r')
-
-    # Prediction with Linear Regression (LR); Comment out the two lines below if we don't need Linear Regression
-    yt2 = theta[0] + theta[1] * xt2
-    plt.plot(xt2, yt2, 'm*')
-
-    # Prediction with LOWESS
-    yt2_lowess = theta_2[0] + theta_2[1] * xt2
-    plt.plot(xt2, yt2_lowess, 'k*')
-
-    ###########################################
-    # Query Point - 3
-    xt3 = 0.5*m # Change xt3; 50% of the number of training examples
-
-    # Assigning weights to training examples
-    T = 0.05*m  # Bandwidth parameter
-    w = np.exp(-(x - xt3) ** 2 / (2 * T ** 2))
-    W = np.diag(w)
-
-    theta_3 = inv(np.transpose(X) @ W @ X) @ np.transpose(X) @ W @ y
-    x_Range3 = np.arange(m*0.375, m*0.725, 0.01)
-    yp_3 = theta_3[0] + theta_3[1] * x_Range3
-    plt.plot(x_Range3, yp_3, 'r')
-
-    # Prediction with Linear Regression (LR); Comment out the two lines below if we don't need Linear Regression
-    yt3 = theta[0] + theta[1] * xt3
-    plt.plot(xt3, yt3, 'm*')
-
-    # Prediction with LOWESS
-    yt3_lowess = theta_3[0] + theta_3[1] * xt3
-    plt.plot(xt3, yt3_lowess, 'k*')
-
-    plt.xlabel("Hours")
-    plt.ylabel("Stock Price (USD)")
-    plt.title("LOWESS to Predict the Stock Data")
-    plt.show()
+    return x_Range1, yp_1, xt1, yt1, yt1_lowess
 
 if __name__ == '__main__':
     # Current serialized data used the parameters: 'IBM', '60min'
