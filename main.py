@@ -58,13 +58,13 @@ def deserialize(file_name):
 # Prediction using Linear Regression - Linear
 def linear_reg_linear():
     # Generate a Training set
-    m = 50
-    x = np.random.randn(m)
-    y = np.random.rand(1) * x + np.random.rand(1)
-    y = y + 0.15 * np.random.rand(m)
+    x, y = np.array(get_test_data())
+    # m is the number of training examples
+    m = len(x)
+    # Plot as a scatter plot
     plt.scatter(x, y)
 
-    # form the design matrix
+    # Form the Design Matrix
     X = np.transpose([np.ones(m), x])
     print(np.shape(X))
 
@@ -75,19 +75,17 @@ def linear_reg_linear():
     yPlot = theta[0] + theta[1] * xPlot
 
     plt.plot(xPlot, yPlot, 'g-')
-    # plt.show()
+    plt.xlabel("Hours")
+    plt.ylabel("Stock Price (USD)")
+    plt.title("Linear Regression - Linear Fit to Predict the Stock Data")
+    plt.show()
 
 
 # Prediction using Linear Regression - Quadratic
 def linear_reg_quadratic():
     # Generate a Training set
-    m = 50
-    x = np.random.randn(m)
-    A = np.random.rand(1)
-    B = np.random.rand(1)
-    C = np.random.rand(1)
-    y = A * x ** 2 + B * x + C
-    y = y + 0.15 * np.random.randn(m)
+    x, y = np.array(get_test_data())
+    m = len(x) 
     plt.scatter(x, y)
 
     # Form the design matrix
@@ -96,12 +94,14 @@ def linear_reg_quadratic():
 
     theta = inv(np.transpose(X) @ X) @ np.transpose(X) @ y
     print(theta)
-    print('A = ', A, 'B = ', B, 'C = ', C)
 
-    xPlot = np.arange(min(x) - 0.5, max(x) + 0.5, 0.1)
+    xPlot = np.arange(min(x), max(x), 0.1)
     yPlot = theta[0] + theta[1] * xPlot + theta[2] * xPlot ** 2
 
     plt.plot(xPlot, yPlot, 'r-')
+    plt.xlabel("Hours")
+    plt.ylabel("Stock Price (USD)")
+    plt.title("Linear Regression - Quadratic Fit to Predict the Stock Data")
     plt.show()
 
 
@@ -226,4 +226,8 @@ def lowess():
 
 if __name__ == '__main__':
     # Current serialized data used the parameters: 'IBM', '60min'
-    print(get_test_data())
+    # print(get_test_data())
+
+    # Linear Regression
+    linear_reg_linear()
+    linear_reg_quadratic()
