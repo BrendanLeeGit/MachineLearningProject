@@ -106,13 +106,12 @@ def linear_reg_quadratic():
 
 
 # Prediction using Locally Weighted Regression (LOWESS)
+# Linear Regression: Green line with the magenta stars
+# LOWESS: Red line with the black stars
 def lowess():
     # Generate Training examples
-    m = 1000
-    x = np.arange(0, 2, 0.002)
-    y = np.sin(np.pi * x)
-    y = y + 0.25 * np.random.randn(m)
-
+    x, y = np.array(get_test_data())
+    m = len(x) 
     plt.scatter(x, y)
 
     # Create Design Matrix
@@ -120,22 +119,22 @@ def lowess():
     print(np.shape(X))
     theta = inv(np.transpose(X) @ X) @ np.transpose(X) @ y
     yp = theta[0] + theta[1] * x
-    plt.plot(x, yp, 'g')
+    plt.plot(x, yp, 'g') # Comment out this line if we don't need Linear Regression
 
     # Query Point - 1
-    xt1 = 0.55
+    xt1 = 0.25*m # Change xt1; 25% of the number of training examples
 
     # Assigning weights to training examples
-    T = 0.05  # Bandwidth parameter # 0.05, Make it large - the LR and LOWESS predictions overlap w/ the default plot
+    T = 0.05*m # Bandwidth parameter; 0.05 * the number of training examples
     w = np.exp(-(x - xt1) ** 2 / (2 * T ** 2))
     W = np.diag(w)
 
     theta_1 = inv(np.transpose(X) @ W @ X) @ np.transpose(X) @ W @ y
-    x_Range1 = np.arange(0.25, 0.95, 0.01)
+    x_Range1 = np.arange(m*0.125, m*0.475, 0.01) # Change the range
     yp_1 = theta_1[0] + theta_1[1] * x_Range1
     plt.plot(x_Range1, yp_1, 'r')
 
-    # Prediction with Linear Regression (LR)
+    # Prediction with Linear Regression (LR); Comment out the two lines below if we don't need Linear Regression
     yt1 = theta[0] + theta[1] * xt1
     plt.plot(xt1, yt1, 'm*')
 
@@ -145,25 +144,29 @@ def lowess():
 
     ###########################################
     # Query Point - 2
-    xt2 = 1.5
+    xt2 = 0.75*m # Change xt2; 75% of the number of training examples
 
     # Assigning weights to training examples
-    T = 0.05  # Bandwidth parameter
+    T = 0.05*m  # Bandwidth parameter
     w = np.exp(-(x - xt2) ** 2 / (2 * T ** 2))
     W = np.diag(w)
 
     theta_2 = inv(np.transpose(X) @ W @ X) @ np.transpose(X) @ W @ y
-    x_Range2 = np.arange(1.25, 1.75, 0.01)
+    x_Range2 = np.arange(m*0.625, m*0.875, 0.01)
     yp_2 = theta_2[0] + theta_2[1] * x_Range2
     plt.plot(x_Range2, yp_2, 'r')
 
-    # Prediction with Linear Regression (LR)
+    # Prediction with Linear Regression (LR); Comment out the two lines below if we don't need Linear Regression
     yt2 = theta[0] + theta[1] * xt2
     plt.plot(xt2, yt2, 'm*')
 
     # Prediction with LOWESS
     yt2_lowess = theta_2[0] + theta_2[1] * xt2
     plt.plot(xt2, yt2_lowess, 'k*')
+    plt.xlabel("Hours")
+    plt.ylabel("Stock Price (USD)")
+    plt.title("LOWESS to Predict the Stock Data")
+    plt.show()
 
 
 # Prediction using SVM
@@ -229,5 +232,6 @@ if __name__ == '__main__':
     # print(get_test_data())
 
     # Linear Regression
-    linear_reg_linear()
-    linear_reg_quadratic()
+    # linear_reg_linear()
+    # linear_reg_quadratic()
+    lowess()
