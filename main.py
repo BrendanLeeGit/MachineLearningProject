@@ -37,7 +37,7 @@ def get_stock_data(symbol, interval):
         x_data.append(x)
 
     # Testing the data let's print it all
-    print(x_data, close_list)
+    print("get_stock_data:", x_data, close_list)
 
 
 def get_test_data():
@@ -66,12 +66,12 @@ def linear_reg_linear():
 
     # Form the Design Matrix
     X = np.transpose([np.ones(m), x])
-    # print(np.shape(X))
+    print("Shape of X (LR Linear):", np.shape(X))
 
     theta = inv(np.transpose(X) @ X) @ np.transpose(X) @ y
-    # print(theta)
+    print("Theta (LR Linear):", theta)
 
-    xPlot = np.arange(min(x) - 0.5, max(x) + 0.5, 0.1)
+    xPlot = np.arange(min(x), max(x), 0.1)
     yPlot = theta[0] + theta[1] * xPlot
 
     plt.plot(xPlot, yPlot, 'g-')
@@ -90,10 +90,10 @@ def linear_reg_quadratic():
 
     # Form the design matrix
     X = np.transpose([np.ones(m), x, x ** 2])
-    # print(np.shape(X))
+    print("Shape of X (LR Quadratic):", np.shape(X))
 
     theta = inv(np.transpose(X) @ X) @ np.transpose(X) @ y
-    # print(theta)
+    print("Theta (LR Quadratic):", theta)
 
     xPlot = np.arange(min(x), max(x), 0.1)
     yPlot = theta[0] + theta[1] * xPlot + theta[2] * xPlot ** 2
@@ -116,7 +116,7 @@ def lowess():
 
     # Create Design Matrix
     X = np.transpose([np.ones(m), x])
-    # print(np.shape(X))
+    print("Shape of X (LOWESS):", np.shape(X))
     theta = inv(np.transpose(X) @ X) @ np.transpose(X) @ y
     yp = theta[0] + theta[1] * x
     plt.plot(x, yp, 'g') # Comment out this line if we don't need Linear Regression
@@ -163,6 +163,29 @@ def lowess():
     # Prediction with LOWESS
     yt2_lowess = theta_2[0] + theta_2[1] * xt2
     plt.plot(xt2, yt2_lowess, 'k*')
+
+    ###########################################
+    # Query Point - 3
+    xt3 = 0.5*m # Change xt3; 50% of the number of training examples
+
+    # Assigning weights to training examples
+    T = 0.05*m  # Bandwidth parameter
+    w = np.exp(-(x - xt3) ** 2 / (2 * T ** 2))
+    W = np.diag(w)
+
+    theta_3 = inv(np.transpose(X) @ W @ X) @ np.transpose(X) @ W @ y
+    x_Range3 = np.arange(m*0.375, m*0.725, 0.01)
+    yp_3 = theta_3[0] + theta_3[1] * x_Range3
+    plt.plot(x_Range3, yp_3, 'r')
+
+    # Prediction with Linear Regression (LR); Comment out the two lines below if we don't need Linear Regression
+    yt3 = theta[0] + theta[1] * xt3
+    plt.plot(xt3, yt3, 'm*')
+
+    # Prediction with LOWESS
+    yt3_lowess = theta_3[0] + theta_3[1] * xt3
+    plt.plot(xt3, yt3_lowess, 'k*')
+
     plt.xlabel("Hours")
     plt.ylabel("Stock Price (USD)")
     plt.title("LOWESS to Predict the Stock Data")
@@ -170,7 +193,7 @@ def lowess():
 
 if __name__ == '__main__':
     # Current serialized data used the parameters: 'IBM', '60min'
-    # print(get_test_data())
+    print("Test Data:", get_test_data())
 
     # Linear Regression
     linear_reg_linear()
