@@ -9,7 +9,6 @@ import requests
 # Stocks API Key
 api_key = 'VOQRXUCBM8M146AW'
 
-
 def get_stock_data(symbol, interval):
     # So the url is split into different parts:
     # 1. base URL: https://www.alphavantage.co/query?...
@@ -22,8 +21,8 @@ def get_stock_data(symbol, interval):
     #    This is the interval between each data point. 5 min means that the data is the stock's price every five minutes
     # 5. apikey: VOQRXUCBM8M146AW
     #    The api key we use to access the API. It only has 25 uses per day.
-    url = f'https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=' + symbol + '&interval=' + \
-          interval + '&apikey={api_key}'
+    url = 'https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=' + symbol + '&interval=' + \
+          interval + f'&apikey={api_key}'
     r = requests.get(url)
     data = r.json()
 
