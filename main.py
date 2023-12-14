@@ -75,7 +75,7 @@ def linear_reg_linear():
     yPlot = theta[0] + theta[1] * xPlot
 
     plt.plot(xPlot, yPlot, 'g-', label="Linear Regression (Linear Fit)")
-    plt.xlabel("Hours")
+    plt.xlabel("Time Interval (Minutes)")
     plt.ylabel("Stock Price (USD)")
     plt.title("Linear Regression - Linear Fit to Predict the Stock Data")
     plt.legend()
@@ -100,7 +100,7 @@ def linear_reg_quadratic():
     yPlot = theta[0] + theta[1] * xPlot + theta[2] * xPlot ** 2
 
     plt.plot(xPlot, yPlot, 'r-', label="Linear Regression (Quadratic Fit)")
-    plt.xlabel("Hours")
+    plt.xlabel("Time Interval (Minutes)")
     plt.ylabel("Stock Price (USD)")
     plt.title("Linear Regression - Quadratic Fit to Predict the Stock Data")
     plt.legend()
@@ -160,7 +160,7 @@ def lowess():
     plt.plot(xt5, yt5, 'm*')
     plt.plot(xt5, yt5_lowess, 'k*')
 
-    plt.xlabel("Hours")
+    plt.xlabel("Time Interval (Minutes)")
     plt.ylabel("Stock Price (USD)")
     plt.title("LOWESS to Predict the Stock Data")
     plt.legend()
