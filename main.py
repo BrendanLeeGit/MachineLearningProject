@@ -37,15 +37,15 @@ def get_stock_data(symbol, interval):
     for x in range(len(close_list)):
         x_data.append(x)
 
-    # serialize("serialized_x_values", x_data)
-    # serialize("serialized_y_values", close_list)
+    serialize("serialized_x_values_new", x_data)
+    serialize("serialized_y_values_new", close_list)
 
     # Testing the data let's print it all
     print("get_stock_data:", x_data, close_list)
 
 
 def get_test_data():
-    return deserialize('serialized_x_values.pkl'), deserialize('serialized_y_values.pkl')
+    return deserialize('serialized_x_values_new.pkl'), deserialize('serialized_y_values_new.pkl')
 
 
 def serialize(file_name, data_to_serialize):
@@ -221,10 +221,19 @@ def demo_of_serialization_usage():
     # If you want to preserve the old files, then just make a new file name when you serialize the data
 
 if __name__ == '__main__':
-    # Current serialized data used the parameters: 'IBM', '60min'
-    # get_stock_data("AAPL", "5min")
+    # Current serialized data used the parameters: 'IBM', '60min' (this is referring to the values that are NOT new
+
+    # Gather input information from user about the symbol and time interval
+    symbol = input("Enter Stock Symbol:")
+    time_interval = input("Enter Time Interval (5min, 15min, 30min, 60min):")
+
+    # Generate and serialize the stock information for use in the other methods
+    get_stock_data(symbol, time_interval)
+
+    # Print obtained data in console for review
     print("Test Data:", get_test_data())
 
+    # The below methods will use the newly serialized data
     # Linear Regression
     linear_reg_linear()
     linear_reg_quadratic()
