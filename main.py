@@ -29,8 +29,20 @@ def get_stock_data(symbol, interval):
     # Gather all the 'close' data (Which means the final price of the stock at the end of the interval)
     close_list = [float(value['4. close']) for value in data['Time Series (' + interval + ')'].values()]
 
+    high_list = []
+    low_list = []
+    if 'Time Series (' + interval + ')' in data:
+        time_series = data['Time Series (' + interval + ')']
+        for date, values in time_series.items():
+            high = float(values['2. high'])
+            low = float(values['3. low'])
+            high_list.append(high)
+            low_list.append(low)
+
     # The data is from recent to old, so instead we're going to reverse the list
     close_list.reverse()
+    high_list.reverse()
+    low_list.reverse()
 
     # Now the x data :D
     x_data = []
