@@ -8,6 +8,7 @@ from numpy.linalg import inv
 # Stocks API Key
 api_key = 'VOQRXUCBM8M146AW'
 
+
 def get_stock_data(symbol, interval):
     # So the url is split into different parts:
     # 1. base URL: https://www.alphavantage.co/query?...
@@ -53,6 +54,7 @@ def deserialize(file_name):
     with open(file_name, 'rb') as file:
         return pickle.load(file)
 
+
 ########### REGRESSION ###########
 
 # Prediction using Linear Regression - Linear
@@ -86,7 +88,7 @@ def linear_reg_linear():
 def linear_reg_quadratic():
     # Generate a Training set
     x, y = np.array(get_test_data())
-    m = len(x) 
+    m = len(x)
     plt.scatter(x, y)
 
     # Form the design matrix
@@ -113,7 +115,7 @@ def linear_reg_quadratic():
 def lowess():
     # Generate Training examples
     x, y = np.array(get_test_data())
-    m = len(x) 
+    m = len(x)
     plt.scatter(x, y)
 
     # Create Design Matrix
@@ -121,7 +123,8 @@ def lowess():
     print("Shape of X (LOWESS):", np.shape(X))
     theta = inv(np.transpose(X) @ X) @ np.transpose(X) @ y
     yp = theta[0] + theta[1] * x
-    plt.plot(x, yp, 'g', label="Linear Regression (Linear Fit)") # Comment out this line if we don't need Linear Regression
+    plt.plot(x, yp, 'g',
+             label="Linear Regression (Linear Fit)")  # Comment out this line if we don't need Linear Regression
 
     # Note: Query points are out of order (check the ranges)
 
@@ -166,21 +169,24 @@ def lowess():
     plt.legend()
     plt.show()
 
+
 # Queries a point for LOWESS
 """
 Takes m for the number of training examples, x and y for the training sets, X for the design matrix, theta,
 2 range multiplier values for x_Range, and the percentage of the number of training examples you want to use
 """
+
+
 def query_point(m, x, y, X, theta, range_m1, range_m2, percentTrainEx):
-    xt1 = percentTrainEx*m # % of the number of training examples
+    xt1 = percentTrainEx * m  # % of the number of training examples
 
     # Assigning weights to training examples
-    T = 0.05*m # Bandwidth parameter; 0.05 * the number of training examples
+    T = 0.05 * m  # Bandwidth parameter; 0.05 * the number of training examples
     w = np.exp(-(x - xt1) ** 2 / (2 * T ** 2))
     W = np.diag(w)
 
     theta_1 = inv(np.transpose(X) @ W @ X) @ np.transpose(X) @ W @ y
-    x_Range1 = np.arange(m*range_m1, m*range_m2, 0.01) # Change the range
+    x_Range1 = np.arange(m * range_m1, m * range_m2, 0.01)  # Change the range
     yp_1 = theta_1[0] + theta_1[1] * x_Range1
 
     # Used for prediction with Linear Regression (LR)
@@ -190,6 +196,20 @@ def query_point(m, x, y, X, theta, range_m1, range_m2, percentTrainEx):
     yt1_lowess = theta_1[0] + theta_1[1] * xt1
 
     return x_Range1, yp_1, xt1, yt1, yt1_lowess
+
+
+def demo_of_serialization_usage():
+    # Start by gathering our lists by deserializing
+    x_values = deserialize('serialized_x_values.pkl')
+    y_values = deserialize('serialized_y_values.pkl')
+
+    # We can now use these lists as normal, as if we generated them with alpha vantage.
+    # If we want to serialize new data, we can do so by specifying a file name like so:
+    serialize('file_name', x_values)  # Notice how we don't include the .pkl at the end. The method adds it for you.
+
+    # The resulting file from above should look like 'file_name.pkl'
+    # If you make a file with the same file name as an existing file, it'll overwrite that existing file.
+    # If you want to preserve the old files, then just make a new file name when you serialize the data
 
 if __name__ == '__main__':
     # Current serialized data used the parameters: 'IBM', '60min'
