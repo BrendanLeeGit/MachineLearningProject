@@ -37,6 +37,9 @@ def get_stock_data(symbol, interval):
     for x in range(len(close_list)):
         x_data.append(x)
 
+    # serialize("serialized_x_values", x_data)
+    # serialize("serialized_y_values", close_list)
+
     # Testing the data let's print it all
     print("get_stock_data:", x_data, close_list)
 
@@ -185,7 +188,13 @@ def query_point(m, x, y, X, theta, range_m1, range_m2, percentTrainEx):
     w = np.exp(-(x - xt1) ** 2 / (2 * T ** 2))
     W = np.diag(w)
 
-    theta_1 = inv(np.transpose(X) @ W @ X) @ np.transpose(X) @ W @ y
+    # In case of the Singular Matrix error
+    theta_1 = np.linalg.pinv(np.transpose(X) @ W @ X) @ np.transpose(X) @ W @ y
+    try:
+        theta_1 = inv(np.transpose(X) @ W @ X) @ np.transpose(X) @ W @ y
+    except:
+        print("Error: Singular Matrix")
+
     x_Range1 = np.arange(m * range_m1, m * range_m2, 0.01)  # Change the range
     yp_1 = theta_1[0] + theta_1[1] * x_Range1
 
@@ -213,6 +222,7 @@ def demo_of_serialization_usage():
 
 if __name__ == '__main__':
     # Current serialized data used the parameters: 'IBM', '60min'
+    # get_stock_data("AAPL", "5min")
     print("Test Data:", get_test_data())
 
     # Linear Regression
